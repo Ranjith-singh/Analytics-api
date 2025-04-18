@@ -22,8 +22,7 @@ Analytics Api :
         sqlalchemy : access and manage sql databases with pydantic domain language
 
     run using fastapi or uvicorn
-
-note : 
+ 
     Docker image :
         it is a static image of the code, requirements and other software to run a application
         it is like a class : blueprint
@@ -35,8 +34,20 @@ note :
         we can even control os for which it has to run
         instructions to build a docker image that is eventually used to create a docker container
 
-    `docker build -t analytics-api:v1 -f Dockerfile`
+    `docker build -t analytics-api:v1 -f Dockerfile.web`
     `docker run analytics-api:v1`
+
+    docker compose :
+        define and run multiple containers
+        import or create docker images
+        docker compose up --watch
+        docker compose down or docker compose down -v (to remove volumes)
+        docker compose run app python or docker compose run app /bin/bash
+
+    note :
+        be sure to change [CRLF] to [LF] in vscode while buiding a docker image
+        because when you build image the end of each line in run.sh gets added with /r(windows style) instead of /n(linux style)
+        so it is not recognised by linux as a cmd
 
 
 
