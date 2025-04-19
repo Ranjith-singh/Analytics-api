@@ -62,6 +62,8 @@ Analytics Api :
             jupyter notebook to test the endpoints
             use pydantic to enforce the types of data to return or else it would just be a hint
             calling complete module to import all like * only those in the __all__ gets imported
+            list cannot be passed as path argument only :
+                int, str, float
 
 
 
