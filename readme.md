@@ -48,12 +48,20 @@ Analytics Api :
         be sure to change [CRLF] to [LF] in vscode while buiding a docker image
         because when you build image the end of each line in run.sh gets added with /r(windows style) instead of /n(linux style)
         so it is not recognised by linux as a cmd
+        while importing the modules be sure to use . instead of / like :
+                api.events.Routing
+        key error :
+            check endpoint method
 
     usage :
         defining rust api's :
             define in the main.py or any custom module from the src path(/api/events) and import those in  main.py
+            event based routing
             while importing the modules be sure to use . instead of / like :
                 api.events.Routing
+            jupyter notebook to test the endpoints
+            use pydantic to enforce the types of data to return or else it would just be a hint
+            calling complete module to import all like * only those in the __all__ gets imported
 
 
 
