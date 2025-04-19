@@ -49,5 +49,11 @@ Analytics Api :
         because when you build image the end of each line in run.sh gets added with /r(windows style) instead of /n(linux style)
         so it is not recognised by linux as a cmd
 
+    usage :
+        defining rust api's :
+            define in the main.py or any custom module from the src path(/api/events) and import those in  main.py
+            while importing the modules be sure to use . instead of / like :
+                api.events.Routing
+
 
 
