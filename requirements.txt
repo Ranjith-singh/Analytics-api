@@ -6,3 +6,5 @@ sqlmodel
 pydantic
 SQLAlchemy
 requests
+python-decouple
+psycopg2-binary

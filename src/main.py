@@ -3,8 +3,15 @@ from typing import Union
 from fastapi import FastAPI
 
 from api.events import router as eventRouter
+from contextlib import asynccontextmanager
+from api.db.session import init_db
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app : FastAPI) :
+    init_db()
+    yield
+
+app = FastAPI(lifespan = lifespan)
 app.include_router(eventRouter,prefix=f'/api/events')
 
 @app.get("/")

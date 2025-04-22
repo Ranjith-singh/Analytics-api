@@ -34,7 +34,7 @@ Analytics Api :
         we can even control os for which it has to run
         instructions to build a docker image that is eventually used to create a docker container
 
-    `docker build -t analytics-api:v1 -f Dockerfile.web`
+    `docker build -t analytics-api:v1 -f Dockerfile.web .`
     `docker run analytics-api:v1`
 
     docker compose :

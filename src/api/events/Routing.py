@@ -1,6 +1,12 @@
 from fastapi import APIRouter
 
-from .Schemas import EventSchema,EventListSchema,EventEventSchema
+from .models import (EventSchema,
+    EventListSchema,
+    EventEventSchema,
+    CreateEventSchema,
+    UpdateEventSchema)
+
+from api.db.config import Database_url
 
 router = APIRouter()
 
@@ -17,13 +23,7 @@ def getItems() -> EventEventSchema:
         'count' : 3
     }
 
-@router.get('/{event_id}')
-def getItems(event_id : int)  -> EventSchema :
-    return {
-        'id' : event_id,
-        'ido' : event_id
-    }
-
+# root path
 @router.get('/')
 def getItems() -> EventListSchema:
     return {
@@ -31,14 +31,15 @@ def getItems() -> EventListSchema:
     }
 
 @router.post('/')
-def createItem(items : dict = {}) -> EventListSchema:
-    print(items)
+def createItem(payload : CreateEventSchema) -> EventListSchema:
+    print(payload)
     return {
         'items' : [1,2,3]
     }
 
 @router.put('/')
-def updateItem(payload : dict = {}) -> EventListSchema:
+def updateItem(payload : UpdateEventSchema) -> EventListSchema:
+    print(payload)
     return {
         'items' : [1,2,3]
     }
@@ -48,4 +49,35 @@ def deleteItem(items : dict = {}) -> EventListSchema:
     return {
         'items' : [1,2,3]
     }
+
+
+# parameter
+@router.get('/{event_id}')
+def getItems(event_id : int)  -> EventSchema :
+    print("Database_url :",Database_url)
+    return {
+        'id' : event_id,
+        'path' : 'localhost'
+    }
+
+@router.post('/{event_id}')
+def createItem(event_id : int, payload : CreateEventSchema) -> EventSchema:
+    data = payload.model_dump() #payload -> dict
+    print("data :",*data)
+    return {
+        'id' : event_id,
+        **data
+    }
+
+@router.put('/{event_id}')
+def updateItem(event_id : int, payload : UpdateEventSchema) -> EventSchema:
+    data = payload.model_dump() #payload -> dict
+    return {
+        'id' : event_id,
+        **data
+    }
+
+
+
+
 
