@@ -1,5 +1,7 @@
 services:
   app:
+    depends_on:
+      - db_service
     image: analytics-api:v1
     build: 
       context: .

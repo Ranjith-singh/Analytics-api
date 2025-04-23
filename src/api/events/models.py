@@ -1,16 +1,40 @@
 # from pydantic import BaseModel, Field
 from typing import List, Optional
 from sqlmodel import SQLModel, Field
+from datetime import datetime, timezone
+
+import sqlmodel
+
+def get_utc_time() :
+    return datetime.now(timezone.utc)
 
 class EventModel(SQLModel, table=True) :
     id : int = Field(primary_key= True, default=None)
     path : Optional[str] = ''
     description : Optional[str] = ''
+    created_at : datetime = Field(
+        default = get_utc_time(),
+        sa_type=sqlmodel.DateTime(timezone=True),
+        nullable= False
+    )
+    updated_at : datetime = Field(
+        default = get_utc_time(),
+        sa_type=sqlmodel.DateTime(timezone=True),
+        nullable= False
+    )
 
 class EventSchema(SQLModel) :
     id : int = Field(primary_key= True, default='')
     path : Optional[str] = ''
     description : Optional[str] = ''
+    created_at : datetime = Field(
+        default = datetime.now(timezone.utc),
+        nullable= False
+    )
+    updated_at : datetime = Field(
+        default = datetime.now(timezone.utc),
+        nullable= False
+    )
 
 class EventListSchema(SQLModel) :
     items : list[int]

@@ -7,7 +7,8 @@ from .models import (EventSchema,
     EventListModel,
     CreateEventSchema,
     UpdateEventSchema,
-    EventModel)
+    EventModel,
+    get_utc_time)
 
 from api.db.config import Database_url
 from api.db.session import getSession
@@ -89,6 +90,8 @@ def updateItem(event_id : int, payload : UpdateEventSchema, session : Session = 
     # print("data :",data)
     for key, value in data.items():
         setattr(obj, key, value)
+    obj.updated_at = get_utc_time()
+    EventModel.model_validate(obj)
     session.commit()
     session.refresh(obj)
     return obj
