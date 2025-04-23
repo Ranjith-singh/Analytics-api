@@ -11,3 +11,7 @@ engine = sqlmodel.create_engine(Database_url)
 def init_db() :
     print("establish connection")
     SQLModel.metadata.create_all(engine)
+
+def getSession():
+    with Session(engine) as session:
+        yield session

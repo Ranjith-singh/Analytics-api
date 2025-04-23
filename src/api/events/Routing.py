@@ -1,12 +1,16 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import Session, select, delete
 
 from .models import (EventSchema,
     EventListSchema,
     EventEventSchema,
+    EventListModel,
     CreateEventSchema,
-    UpdateEventSchema)
+    UpdateEventSchema,
+    EventModel)
 
 from api.db.config import Database_url
+from api.db.session import getSession
 
 router = APIRouter()
 
@@ -24,18 +28,24 @@ def getItems() -> EventEventSchema:
     }
 
 # root path
-@router.get('/')
-def getItems() -> EventListSchema:
+@router.get('/',response_model=EventListModel)
+def getItems(session : Session = Depends(getSession)):
+    query = select(EventModel).order_by(EventModel.id.desc()).limit(5)
+    data = session.exec(query).fetchall()
+    print("data :",data)
     return {
-        'items' : [1,2,3]
+        'items' : data
     }
 
-@router.post('/')
-def createItem(payload : CreateEventSchema) -> EventListSchema:
-    print(payload)
-    return {
-        'items' : [1,2,3]
-    }
+@router.post('/', response_model=EventModel)
+def createItem(payload : CreateEventSchema, session : Session = Depends(getSession)):
+    data = payload.model_dump()
+    print("data :",data)
+    obj = EventModel.model_validate(data)
+    session.add(obj)
+    session.commit()
+    session.refresh(obj)
+    return obj
 
 @router.put('/')
 def updateItem(payload : UpdateEventSchema) -> EventListSchema:
@@ -52,16 +62,18 @@ def deleteItem(items : dict = {}) -> EventListSchema:
 
 
 # parameter
-@router.get('/{event_id}')
-def getItems(event_id : int)  -> EventSchema :
-    print("Database_url :",Database_url)
-    return {
-        'id' : event_id,
-        'path' : 'localhost'
-    }
+@router.get('/{event_id}', response_model=EventModel)
+def getItems(event_id : int, session : Session = Depends(getSession)) :
+    query = select(EventModel).where(EventModel.id == event_id)
+    result = session.exec(query).first()
+    if result is None:
+        raise HTTPException(status_code=404,detail="Event not found")
+    # obj = EventModel.model_validate(result)
+    return result
 
-@router.post('/{event_id}')
-def createItem(event_id : int, payload : CreateEventSchema) -> EventSchema:
+@router.post('/{event_id}', response_model=EventSchema)
+def createItem(event_id : int, payload : CreateEventSchema, session : Session = Depends(getSession)):
+    query = select(EventModel).where(EventModel.id == event_id)
     data = payload.model_dump() #payload -> dict
     print("data :",*data)
     return {
@@ -69,12 +81,28 @@ def createItem(event_id : int, payload : CreateEventSchema) -> EventSchema:
         **data
     }
 
-@router.put('/{event_id}')
-def updateItem(event_id : int, payload : UpdateEventSchema) -> EventSchema:
+@router.put('/{event_id}', response_model=EventSchema)
+def updateItem(event_id : int, payload : UpdateEventSchema, session : Session = Depends(getSession)):
+    query = select(EventModel).where(EventModel.id == event_id)
+    obj = session.exec(query).first()
     data = payload.model_dump() #payload -> dict
+    # print("data :",data)
+    for key, value in data.items():
+        setattr(obj, key, value)
+    session.commit()
+    session.refresh(obj)
+    return obj
+
+@router.delete('/{event_id}', response_model=EventListModel)
+def deleteItem(event_id : int, session : Session = Depends(getSession)):
+    # query = select(EventModel).where(EventModel.id == event_id)
+    query = delete(EventModel).where(EventModel.id == event_id).returning(EventModel)
+    obj = session.exec(query).all()
+    session.commit()
+    # session.refresh(obj)
+    # print("obj :",obj)
     return {
-        'id' : event_id,
-        **data
+        'items' : obj
     }
 
 
